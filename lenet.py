@@ -12,7 +12,7 @@ class LeNet5(nn.Module):
         super(LeNet5, self).__init__()
         
         # Instantiate LeNet-5 Model with custom activation functions
-        self.model: nn.Sequential = nn.Sequential(
+        self.cnn_model: nn.Sequential = nn.Sequential(
             nn.Conv2d(1,6,kernel_size=(5,5)),
             self.activation_factory(activation),
             nn.MaxPool2d(kernel_size=(2,2), stride=2),
@@ -21,20 +21,24 @@ class LeNet5(nn.Module):
             nn.MaxPool2d(kernel_size=(2,2), stride=2),
             nn.Conv2d(16, 120, kernel_size=(5,5)),
             self.activation_factory(activation),
+        )
+        
+        self.fc_model: nn.Sequential = nn.Sequential(
             nn.Linear(120, 84),
             self.activation_factory(activation),
             nn.Linear(84, 10),
-            nn.Softmax(10)
+            nn.Softmax(-1)
         )
         
     def forward(self, img: T.Tensor)->T.Tensor:
         """Generate Prediction based on image fed through model
         
-        Input must be of size (32,32,1)
+        Input must be of size (1,32,32)
         """
-        output = self.model(img)
+        output = self.cnn_model(img)
+        output = self.fc_model(output.view(1,-1))
         return output
-        
+    
     def activation_factory(self, activation: str)->nn.Module:
         """Return an instance of an activation function depending on what is requested
 
