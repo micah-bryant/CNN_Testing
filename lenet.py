@@ -28,7 +28,10 @@ class LeNet5(nn.Module):
         )
         
     def forward(self, img: T.Tensor)->T.Tensor:
-        """Generate Prediction based on image fed through model"""
+        """Generate Prediction based on image fed through model
+        
+        Input must be of size (32,32,1)
+        """
         output = self.model(img)
         return output
         
